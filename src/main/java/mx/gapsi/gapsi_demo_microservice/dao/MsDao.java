@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import mx.gapsi.commons.model.Base;
 import mx.gapsi.commons.utils.DbQueries;
+import mx.gapsi.commons.utils.InitObject;
 import mx.gapsi.gapsi_demo_microservice.model.Label;
 
 @Repository
@@ -26,23 +26,23 @@ public class MsDao {
 
     public Base findAll(Base base) {
         base.setSuccessfully(false);
-        List<Label> collection = new ArrayList<>();
-        String query = DbQueries.buidlQuery(base, FIND_ALL);
+        List<Label> collection;
+        String query = DbQueries.buildQuery(base, FIND_ALL) + 
+                        DbQueries.buildOrderBy(base) + 
+                        DbQueries.buildPagination(base);
         HashMap<String, String> search = Objects.isNull(base.getSearch()) ? null : base.getSearch().getParameters();
         collection = jdbcTemplate.query(
                     connection -> {
                         PreparedStatement ps = connection.prepareStatement(query);
-                        if (!Objects.isNull(search) && !search.isEmpty()) {
-                            search.remove("searchType");
-                            int i = 1;
-                            for (String column : Objects.requireNonNull(search).keySet()) {
-                                ps.setObject(i, search.get(column));
-                                i++;
-                            }
-                        }
-                        return ps;
+                        return DbQueries.buildStatement(search, ps);
                     },new BeanPropertyRowMapper<>(Label.class)
             );
+        if (Objects.isNull(collection)) {
+            collection = new ArrayList<>();
+        }
+        base.setCustomDto(InitObject.toCustomDto(base));
+        List<Object> objectList = new ArrayList<>(collection);
+        base.getCustomDto().setObjects(objectList);
 
         return base;
     }
