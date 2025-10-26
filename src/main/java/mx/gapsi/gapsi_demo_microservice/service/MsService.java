@@ -16,5 +16,15 @@ public class MsService {
         msDao.findAll(base);
         return base;
     }
+
+    public Base insert (Base base) {
+        msDao.insert(base);
+        return base;
+    }
+
+    public Base update (Base base) {
+        msDao.update(base);
+        return base;
+    }
     
 }
