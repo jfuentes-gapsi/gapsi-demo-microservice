@@ -9,10 +9,9 @@ import org.springframework.http.HttpStatus;
 import mx.gapsi.commons.model.Base;
 import mx.gapsi.commons.dto.CustomDto;
 import mx.gapsi.commons.utils.InitObject;
+import mx.gapsi.commons.utils.StringUtils;
 import mx.gapsi.gapsi_demo_microservice.model.Label;
 import mx.gapsi.gapsi_demo_microservice.service.MsService;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -66,6 +65,24 @@ public class MsController {
             msService.update(base);
             base.getCustomDto().setCode(HttpStatus.OK.value());
             base.getCustomDto().setDescription("Update successfully");
+            return new ResponseEntity<CustomDto>(base.getCustomDto(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            base.getCustomDto().setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            base.getCustomDto().setDescription(e.getMessage());
+            return new ResponseEntity<CustomDto>(base.getCustomDto(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+	}
+
+    @DeleteMapping()
+    public ResponseEntity<?> delete(@RequestParam(name="items", defaultValue = "", required = false) String items) {
+        Base base = new Base();
+        try {
+            InitObject.toBase(base);
+            base.setItems(StringUtils.itemsToList(items));
+            msService.delete(base);
+            base.getCustomDto().setCode(HttpStatus.OK.value());
+            base.getCustomDto().setDescription("Delete successfully");
             return new ResponseEntity<CustomDto>(base.getCustomDto(), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

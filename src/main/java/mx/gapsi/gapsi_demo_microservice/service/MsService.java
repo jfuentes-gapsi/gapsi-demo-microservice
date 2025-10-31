@@ -26,5 +26,10 @@ public class MsService {
         msDao.update(base);
         return base;
     }
+
+    public Base delete (Base base) {
+        msDao.delete(base);
+        return base;
+    }
     
 }

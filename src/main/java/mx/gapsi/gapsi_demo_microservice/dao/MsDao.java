@@ -25,6 +25,7 @@ public class MsDao {
     private final static String FIND_ALL = "SELECT LABEL_ID, KEY, VALUE, LANGUAGE, CREATED, USER_CREATOR, UPDATED, USER_MODIFIER FROM LABELS";
     private final static String INSERT = "INSERT INTO LABELS(KEY, VALUE, LANGUAGE, CREATED, USER_CREATOR) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?) RETURNING LABEL_ID";
     private final static String UPDATE = "UPDATE LABELS SET VALUE = ?, LANGUAGE = ?, USER_MODIFIER = ?, UPDATED = CURRENT_TIMESTAMP, KEY= ? WHERE LABEL_ID= ?";
+    private final static String DELETE = "DELETE FROM LABELS";
 
     public Base findAll(Base base) {
         base.setSuccessfully(false);
@@ -83,6 +84,21 @@ public class MsDao {
         }
         collection.add(label);
         base.getCustomDto().setData(collection);
+
+        return base;
+    }
+
+    public Base delete(Base base) {
+        int rowAffected = 0;
+		String queryIn = DbQueries.buildQueryIn(DELETE, base.getItems(), "LABEL_ID");
+        base.setSuccessfully(false);
+        rowAffected = jdbcTemplate.update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(queryIn);
+				return ps;
+			});
+        if (rowAffected > 0) {
+            base.setSuccessfully(true);
+        }
 
         return base;
     }
