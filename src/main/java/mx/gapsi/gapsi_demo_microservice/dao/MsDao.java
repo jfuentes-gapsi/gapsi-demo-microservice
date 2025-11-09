@@ -11,13 +11,14 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import mx.gapsi.commons.interfaces.crud;
 import mx.gapsi.commons.model.Base;
 import mx.gapsi.commons.utils.DbQueries;
 import mx.gapsi.commons.utils.InitObject;
 import mx.gapsi.gapsi_demo_microservice.model.Label;
 
 @Repository
-public class MsDao {
+public class MsDao implements crud {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
